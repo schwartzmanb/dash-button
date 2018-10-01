@@ -16,5 +16,19 @@ pip3 install -e .
 Run with:
 
 ```
-python3 src/dashbutton/dashbutton.py
+python3 src/dashbutton/dashButton.py
+```
+
+Use the `r` or `-read` flag followed by a filename to specify a csv file of button name + MAC pairs.
+
+```
+python3 src/dashbutton/dashButton.py -r path/to/file.csv
+```
+
+### Testing
+
+Execute pytest in the package root
+
+```
+pytest
 ```
