@@ -1,12 +1,11 @@
 from scapy.all import sniff
 import csv
 import sys
+from src.dashbutton.vendorDiscovery import returnManufacturor
 
 buttonDict = {}
 
 # Open csv file from path specified
-
-
 def readCSV(filename):
     try:
         csvFile = open(filename, 'r')
@@ -17,8 +16,6 @@ def readCSV(filename):
         buttonDict[key] = val
 
 # Return key of button (name) upon detection of MAC address
-
-
 def button_detect(pkt):
     pktKey = "ARP"
     if pkt[pktKey].op == 1:
@@ -26,28 +23,29 @@ def button_detect(pkt):
             if pkt[pktKey].hwsrc == buttonDict[i]:
                 return buttonDict[i]
 
-
+# Continously detect all ARP packets and output their MAC address
 def arp_detect(pkt):
     pktKey = "ARP"
     if pkt[pktKey].op == 1:
-        return pkt[pktKey].hwsrc
+        mac = pkt[pktKey].hwsrc
+        vendor = returnManufacturor(mac)
+        return "MAC: " + mac + " Vendor: " + vendor
 
 
 def main():
-    if "--listen" in sys.argv:
-        print(sniff(prn=arp_detect, filter="arp", store=0))
-    elif "-l" in sys.argv:
-        print(sniff(prn=arp_detect, filter="arp", store=0))
+    if "--listen" in sys.argv or "-l" in sys.argv:
+        print(sniff(count=100, prn=arp_detect, filter="arp", store=0))
     else:
-    	for key in buttonDict:
-        	print(key + " " + buttonDict[key])
-    	print(sniff(prn=button_detect, filter="arp", store=0))
+        for key in buttonDict:
+            print(key + " " + buttonDict[key])
+        print(sniff(prn=button_detect, filter="arp", store=0))
 
 
 if __name__ == "__main__":
-    if "--read" in sys.argv:
-        readCSV(sys.argv[sys.argv.index("--read") + 1])
-    elif "-r" in sys.argv:
-        readCSV(sys.argv[sys.argv.index("-r") + 1])
-
+    if "--read" in sys.argv or "-r" in sys.argv:
+        if "--read" in sys.argv:
+            argIndex = sys.argv.index("--read")
+        else:
+            argIndex = sys.argv.index("-r")
+        readCSV(sys.argv[argIndex + 1])
     main()
