@@ -1,7 +1,7 @@
 from scapy.all import sniff
 import csv
 import sys
-from vendorDiscovery import returnManufacturor
+from src.dashbutton.vendorDiscovery import returnManufacturor
 
 buttonDict = {}
 
